@@ -34,7 +34,9 @@ class nginx (
   $proxy_set_header   = $nginx::params::nx_proxy_set_header,
   $confd_purge        = $nginx::params::nx_confd_purge,
   $configtest_enable  = $nginx::params::nx_configtest_enable,
-  $service_restart    = $nginx::params::nx_service_restrart
+  $service_restart    = $nginx::params::nx_service_restrart,
+  $config_template = $nginx::params::config_template,
+  $proxy_template = $nginx::params::proxy_template,
 ) inherits nginx::params {
 
   include stdlib
@@ -50,9 +52,11 @@ class nginx (
     confd_purge         => $confd_purge,
     require 		=> Class['nginx::package'],
     notify  		=> Class['nginx::service'],
+    config_template => $config_template,
+    proxy_template => $proxy_template,
   }
 
-  class { 'nginx::service': 
+  class { 'nginx::service':
     configtest_enable => $configtest_enable,
     service_restart => $service_restart,
   }

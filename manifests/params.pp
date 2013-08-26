@@ -61,4 +61,6 @@ class nginx::params {
   $nx_configtest_enable	 = false
   $nx_service_restart = "/etc/init.d/nginx configtest && /etc/init.d/nginx restart"
 
+  $config_template = 'nginx/conf.d/nginx.conf.erb'
+  $proxy_template = 'nginx/conf.d/proxy.conf.erb'
 }

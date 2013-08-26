@@ -17,7 +17,9 @@ class nginx::config(
   $worker_processes    = $nginx::params::nx_worker_processes,
   $worker_connections  = $nginx::params::nx_worker_connections,
   $proxy_set_header    = $nginx::params::nx_proxy_set_header,
-  $confd_purge         = $nginx::params::nx_confd_purge
+  $confd_purge         = $nginx::params::nx_confd_purge,
+  $config_template = $nginx::params::config_template,
+  $proxy_template = $nginx::params::proxy_template,
 ) inherits nginx::params {
   File {
     owner => 'root',
@@ -61,12 +63,12 @@ class nginx::config(
 
   file { "${nginx::params::nx_conf_dir}/nginx.conf":
     ensure  => file,
-    content => template('nginx/conf.d/nginx.conf.erb'),
+    content => template($config_template),
   }
 
   file { "${nginx::params::nx_conf_dir}/conf.d/proxy.conf":
     ensure  => file,
-    content => template('nginx/conf.d/proxy.conf.erb'),
+    content => template($proxy_template),
   }
 
   file { "${nginx::config::nx_temp_dir}/nginx.d":
