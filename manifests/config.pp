@@ -20,6 +20,10 @@ class nginx::config(
   $confd_purge         = $nginx::params::nx_confd_purge,
   $config_template = $nginx::params::config_template,
   $proxy_template = $nginx::params::proxy_template,
+  $nx_daemon_user = $nginx::config::nx_daemon_user,
+  $nx_pid = $nginx::params::nx_pid,
+  $nx_multi_accept = $nginx::params::nx_multi_accept,
+
 ) inherits nginx::params {
   File {
     owner => 'root',
