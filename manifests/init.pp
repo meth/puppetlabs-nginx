@@ -37,6 +37,13 @@ class nginx (
   $service_restart    = $nginx::params::nx_service_restrart,
   $config_template = $nginx::params::config_template,
   $proxy_template = $nginx::params::proxy_template,
+  $nx_sendfile = $nginx::params::nx_sendfile,
+  $nx_tcp_nopush = $nginx::params::nx_tcp_nopush,
+  $nx_keepalive_timeout = $nginx::params::nx_keepalive_timeout,
+  $nx_tcp_nodelay = $nginx::params::nx_tcp_nodelay,
+  $nx_logdir = $nginx::params::nx_logdir,
+  $nx_gzip = $nginx::params::nx_gzip,
+  $extra_config_options = {},
 ) inherits nginx::params {
 
   include stdlib
@@ -54,6 +61,13 @@ class nginx (
     notify  		=> Class['nginx::service'],
     config_template => $config_template,
     proxy_template => $proxy_template,
+    nx_sendfile => $nx_sendfile,
+    nx_tcp_nopush => $nx_tcp_nopush,
+    nx_keepalive_timeout => $nx_keepalive_timeout,
+    nx_tcp_nodelay => $nx_tcp_nodelay,
+    nx_logdir => $nx_logdir,
+    nx_gzip => $nx_gzip,
+    extra_options => $extra_config_options,
   }
 
   class { 'nginx::service':

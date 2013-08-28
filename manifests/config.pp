@@ -23,7 +23,13 @@ class nginx::config(
   $nx_daemon_user = $nginx::config::nx_daemon_user,
   $nx_pid = $nginx::params::nx_pid,
   $nx_multi_accept = $nginx::params::nx_multi_accept,
-
+  $nx_sendfile = $nginx::params::nx_sendfile,
+  $nx_tcp_nopush = $nginx::params::nx_tcp_nopush,
+  $nx_keepalive_timeout = $nginx::params::nx_keepalive_timeout,
+  $nx_tcp_nodelay = $nginx::params::nx_tcp_nodelay,
+  $nx_logdir = $nginx::params::nx_logdir,
+  $nx_gzip = $nginx::params::nx_gzip,
+  $extra_options = {},
 ) inherits nginx::params {
   File {
     owner => 'root',
