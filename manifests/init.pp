@@ -44,6 +44,13 @@ class nginx (
   $nx_logdir = $nginx::params::nx_logdir,
   $nx_gzip = $nginx::params::nx_gzip,
   $extra_config_options = {},
+  $nx_proxy_redirect = $nginx::params::nx_proxy_redirect,
+  $nx_client_max_body_size = $nginx::params::nx_client_max_body_size,
+  $nx_client_body_buffer_size = $nginx::params::nx_client_body_buffer_size,
+  $nx_proxy_connect_timeout = $nginx::params::nx_proxy_connect_timeout,
+  $nx_proxy_send_timeout = $nginx::params::nx_proxy_send_timeout,
+  $nx_proxy_read_timeout = $nginx::params::nx_proxy_read_timeout,
+  $nx_proxy_buffers = $nginx::params::nx_proxy_buffers,
 ) inherits nginx::params {
 
   include stdlib
@@ -68,6 +75,13 @@ class nginx (
     nx_logdir => $nx_logdir,
     nx_gzip => $nx_gzip,
     extra_options => $extra_config_options,
+    nx_proxy_redirect => $nx_proxy_redirect,
+    nx_client_max_body_size => $nx_client_max_body_size,
+    nx_client_body_buffer_size => $nx_client_body_buffer_size,
+    nx_proxy_connect_timeout => $nx_proxy_connect_timeout,
+    nx_proxy_send_timeout => $nx_proxy_send_timeout,
+    nx_proxy_read_timeout => $nx_proxy_read_timeout,
+    nx_proxy_buffers => $nx_proxy_buffers,
   }
 
   class { 'nginx::service':
