@@ -53,6 +53,8 @@ class nginx (
   $nx_proxy_buffers = $nginx::params::nx_proxy_buffers,
   $nx_package_ensure = present,
 ) inherits nginx::params {
+  
+  warning('This module is no longer supported and we direct you to our upstream source, http://forge.puppetlabs.com/jfryman/nginx')
 
   include stdlib
 
