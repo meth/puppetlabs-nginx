@@ -51,21 +51,23 @@ class nginx (
   $nx_proxy_send_timeout = $nginx::params::nx_proxy_send_timeout,
   $nx_proxy_read_timeout = $nginx::params::nx_proxy_read_timeout,
   $nx_proxy_buffers = $nginx::params::nx_proxy_buffers,
+  $nx_package_ensure = present,
 ) inherits nginx::params {
 
   include stdlib
 
   class { 'nginx::package':
     notify => Class['nginx::service'],
+    nx_package_ensure   => $nx_package_ensure,
   }
 
   class { 'nginx::config':
-    worker_processes 	=> $worker_processes,
-    worker_connections 	=> $worker_connections,
-    proxy_set_header 	=> $proxy_set_header,
+    worker_processes    => $worker_processes,
+    worker_connections  => $worker_connections,
+    proxy_set_header    => $proxy_set_header,
     confd_purge         => $confd_purge,
-    require 		=> Class['nginx::package'],
-    notify  		=> Class['nginx::service'],
+    require         => Class['nginx::package'],
+    notify          => Class['nginx::service'],
     config_template => $config_template,
     proxy_template => $proxy_template,
     nx_sendfile => $nx_sendfile,

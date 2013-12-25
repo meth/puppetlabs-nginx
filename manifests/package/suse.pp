@@ -15,7 +15,11 @@
 # Sample Usage:
 #
 # This class file is not called directly
-class nginx::package::suse {
+class nginx::package::suse
+(
+    $nx_package_ensure = present,
+)
+{
   $suse_packages = [
     'nginx-0.8', 'apache2', 'apache2-itk', 'apache2-utils', 'gd', 'libapr1',
     'libapr-util1', 'libjpeg62', 'libpng14-14', 'libxslt', 'rubygem-daemon_controller',
@@ -24,6 +28,6 @@ class nginx::package::suse {
   ]
 
   package { $suse_packages:
-    ensure => present,
+    ensure => $nx_package_ensure,
   }
 }
