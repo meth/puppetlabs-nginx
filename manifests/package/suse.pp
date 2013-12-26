@@ -16,9 +16,6 @@
 #
 # This class file is not called directly
 class nginx::package::suse
-(
-    $nx_package_ensure = present,
-)
 {
   $suse_packages = [
     'nginx-0.8', 'apache2', 'apache2-itk', 'apache2-utils', 'gd', 'libapr1',
@@ -28,6 +25,6 @@ class nginx::package::suse
   ]
 
   package { $suse_packages:
-    ensure => $nx_package_ensure,
+    ensure => $nginx::package_ensure,
   }
 }

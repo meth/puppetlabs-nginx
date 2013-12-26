@@ -13,35 +13,59 @@
 # Sample Usage:
 #
 # This class file is not called directly
-class nginx::package::redhat
-(
-    $nx_package_ensure = present,
-)
-{
-  $redhat_packages = ['nginx', 'GeoIP', 'gd', 'libXpm', 'libxslt']
+class nginx::package::redhat (
+  $manage_repo    = true,
+  $package_ensure = 'present',
+  $package_name   = 'nginx',
+) {
 
-  if downcase($::operatingsystem) == "redhat" {
-    $os_type = "rhel"
-  } else {
-    $os_type = downcase($::operatingsystem)
+  case $::operatingsystem {
+    'fedora': {
+      # nginx.org does not supply RPMs for fedora
+      # fedora 18 provides 1.2.x packages
+      # fedora 19 has 1.4.x packages are in
+
+      # fedora 18 users will need to supply their own nginx 1.4 rpms and/or repo
+      if $::lsbmajdistrelease and $::lsbmajdistrelease < 19 {
+        notice("${::operatingsystem} ${::lsbmajdistrelease} does not supply nginx >= 1.4 packages")
+      }
+    }
+    default: {
+      case $::lsbmajdistrelease {
+        5, 6: {
+          $os_rel = $::lsbmajdistrelease
+        }
+        default: {
+          # Amazon uses the year as the $::lsbmajdistrelease
+          $os_rel = 6
+        }
+      }
+
+      # as of 2013-07-28
+      # http://nginx.org/packages/centos appears to be identical to
+      # http://nginx.org/packages/rhel
+      # no other dedicated dirs exist for platforms under $::osfamily == redhat
+      if $manage_repo {
+        yumrepo { 'nginx-release':
+          baseurl  => "http://nginx.org/packages/rhel/${os_rel}/\$basearch/",
+          descr    => 'nginx repo',
+          enabled  => '1',
+          gpgcheck => '1',
+          priority => '1',
+          gpgkey   => 'http://nginx.org/keys/nginx_signing.key',
+          before   => Package[$package_name],
+        }
+
+        file { '/etc/yum.repos.d/nginx-release.repo':
+          ensure  => present,
+          require => Yumrepo['nginx-release'],
+        }
+      }
+    }
   }
 
-  if $::lsbmajdistrelease == undef {
-    $os_rel = regsubst($::operatingsystemrelease, '\..*$', '')
-  } else {
-    $os_rel = $::lsbmajdistrelease
+  package { $package_name:
+    ensure  => $package_ensure,
   }
 
-  yumrepo { "nginx-release":
-    baseurl  => "http://nginx.org/packages/${os_type}/${os_rel}/\$basearch/",
-    descr    => 'nginx repo',
-    enabled  => '1',
-    gpgcheck => '0',
-  }
-
-  package { $redhat_packages:
-    ensure  => present,
-    require => Yumrepo['nginx-release'],
-    ensure => $nx_package_ensure,
-  }
 }
