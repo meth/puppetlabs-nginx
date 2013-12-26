@@ -58,8 +58,6 @@ class nginx (
   $manage_repo            = $nginx::params::manage_repo,
 ) inherits nginx::params {
 
-  warning('This module is no longer supported and we direct you to our upstream source, http://forge.puppetlabs.com/jfryman/nginx')
-
   include stdlib
 
   class { 'nginx::package':
