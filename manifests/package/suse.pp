@@ -15,6 +15,7 @@
 # Sample Usage:
 #
 # This class file is not called directly
+
 class nginx::package::suse
 {
   $suse_packages = [

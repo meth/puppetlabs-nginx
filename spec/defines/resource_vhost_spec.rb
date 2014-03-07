@@ -7,7 +7,7 @@ describe 'nginx::resource::vhost' do
   let :default_params do
     {
       :www_root    => '/',
-      :ipv6_enable => 'true',
+      :ipv6_enable => true,
     }
   end
   let :facts do
@@ -58,7 +58,7 @@ describe 'nginx::resource::vhost' do
         {
           :title => 'should set the IPv4 listen port',
           :attr  => 'listen_port',
-          :value => '45',
+          :value => 45,
           :match => '  listen                *:45;',
         },
         {
@@ -66,12 +66,6 @@ describe 'nginx::resource::vhost' do
           :attr  => 'listen_options',
           :value => 'spdy default',
           :match => '  listen                *:80 spdy default;',
-        },
-        {
-          :title => 'should enable IPv6',
-          :attr  => 'ipv6_enable',
-          :value => 'true',
-          :match => '  listen [::]:80 default ipv6only=on;',
         },
         {
           :title => 'should enable IPv6',
@@ -94,14 +88,14 @@ describe 'nginx::resource::vhost' do
         {
           :title => 'should set the IPv6 listen port',
           :attr  => 'ipv6_listen_port',
-          :value => '45',
+          :value => 45,
           :match => '  listen [::]:45 default ipv6only=on;',
         },
         {
           :title => 'should set the IPv6 listen options',
           :attr  => 'ipv6_listen_options',
           :value => 'spdy',
-          :match => '  listen [::]:80 spdy ipv6only=on;',
+          :match => '  listen [::]:80 spdy;',
         },
         {
           :title => 'should set servername(s)',
@@ -278,7 +272,7 @@ describe 'nginx::resource::vhost' do
         {
           :title => 'should set the IPv4 SSL listen port',
           :attr  => 'ssl_port',
-          :value => '45',
+          :value => 45,
           :match => '  listen       *:45 ssl;',
         },
         {
@@ -300,46 +294,34 @@ describe 'nginx::resource::vhost' do
           :match => '  listen       *:443 ssl default;',
         },
         {
-          :title => 'should not set the IPv4 listen options',
-          :attr  => 'listen_options',
-          :value => false,
-          :match => '  listen       *:443 ssl;',
-        },
-        {
-          :title => 'should enable IPv6',
-          :attr  => 'ipv6_enable',
-          :value => 'true',
-          :match => '  listen [::]:80 default ipv6only=on;',
-        },
-        {
           :title => 'should enable IPv6',
           :attr  => 'ipv6_enable',
           :value => true,
-          :match => '  listen [::]:80 default ipv6only=on;',
+          :match => '  listen [::]:443 ssl default ipv6only=on;',
         },
         {
           :title    => 'should disable IPv6',
           :attr     => 'ipv6_enable',
           :value    => false,
-          :notmatch => /  listen \[::\]:80 default ipv6only=on;/,
+          :notmatch => /  listen \[::\]:443 ssl default ipv6only=on;/,
         },
         {
           :title => 'should set the IPv6 listen IP',
           :attr  => 'ipv6_listen_ip',
           :value => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
-          :match => '  listen [2001:0db8:85a3:0000:0000:8a2e:0370:7334]:80 default ipv6only=on;',
+          :match => '  listen [2001:0db8:85a3:0000:0000:8a2e:0370:7334]:443 ssl default ipv6only=on;',
         },
         {
           :title => 'should set the IPv6 listen port',
-          :attr  => 'ipv6_listen_port',
-          :value => '45',
-          :match => '  listen [::]:45 default ipv6only=on;',
+          :attr  => 'ssl_port',
+          :value => 45,
+          :match => '  listen [::]:45 ssl default ipv6only=on;',
         },
         {
           :title => 'should set the IPv6 listen options',
           :attr  => 'ipv6_listen_options',
           :value => 'spdy default',
-          :match => '  listen [::]:80 spdy default ipv6only=on;',
+          :match => '  listen [::]:443 ssl spdy default;',
         },
         {
           :title => 'should set servername(s)',
@@ -539,9 +521,9 @@ describe 'nginx::resource::vhost' do
         it { should contain_nginx__resource__location("#{title}-default").with_location_cfg_append({ 'key' => 'value' }) }
       end
 
-      context 'when fastcgi => true' do
+      context 'when fastcgi => "localhost:9000"' do
         let :params do default_params.merge({
-          :fastcgi => true,
+          :fastcgi => 'localhost:9000',
         }) end
 
         it { should contain_file('/etc/nginx/fastcgi_params').with_mode('0770') }
@@ -617,6 +599,13 @@ describe 'nginx::resource::vhost' do
         it { should contain_concat__fragment("#{title}-ssl-header").with_content( /passenger_set_cgi_param  test1 test value 1;/ ) }
         it { should contain_concat__fragment("#{title}-ssl-header").with_content( /passenger_set_cgi_param  test2 test value 2;/ ) }
         it { should contain_concat__fragment("#{title}-ssl-header").with_content( /passenger_set_cgi_param  test3 test value 3;/ ) }
+      end
+
+      context 'when vhost name is sanitized' do
+        let :title do 'www rspec-vhost com' end
+        let :params do default_params end
+
+        it { should contain_concat('/etc/nginx/sites-available/www_rspec-vhost_com.conf') }
       end
     end
   end

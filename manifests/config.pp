@@ -25,6 +25,8 @@ class nginx::config(
   $proxy_cache_max_size   = $nginx::params::nx_proxy_cache_max_size,
   $proxy_cache_inactive   = $nginx::params::nx_proxy_cache_inactive,
   $proxy_http_version     = $nginx::params::nx_proxy_http_version,
+  $names_hash_bucket_size = $nginx::params::nx_names_hash_bucket_size,
+  $names_hash_max_size    = $nginx::params::nx_names_hash_max_size,
   $types_hash_max_size    = $nginx::params::nx_types_hash_max_size,
   $types_hash_bucket_size = $nginx::params::nx_types_hash_bucket_size,
   $client_max_body_size   = $nginx::params::nx_client_max_body_size,
@@ -33,7 +35,13 @@ class nginx::config(
   $nginx_error_log        = $nginx::params::nx_nginx_error_log,
   $http_access_log        = $nginx::params::nx_http_access_log,
   $proxy_buffer_size      = $nginx::params::nx_proxy_buffer_size,
+  $gzip                   = $nginx::params::nx_gzip,
 ) inherits nginx::params {
+
+  if $caller_module_name != $module_name {
+    warning("${name} is deprecated as a public API of the ${module_name} module and should no longer be directly included in the manifest.")
+  }
+
   File {
     owner => 'root',
     group => 'root',
@@ -112,12 +120,14 @@ class nginx::config(
     ensure  => absent,
     purge   => true,
     recurse => true,
+    force   => true,
   }
 
   file { "${nginx::config::nx_temp_dir}/nginx.mail.d":
     ensure  => absent,
     purge   => true,
     recurse => true,
+    force   => true,
   }
 
   file { "$nx_logdir":

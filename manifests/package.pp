@@ -19,6 +19,11 @@ class nginx::package(
   $package_ensure = 'present',
   $manage_repo    = true,
 ) {
+
+  if $caller_module_name != $module_name {
+    warning("${name} is deprecated as a public API of the ${module_name} module and should no longer be directly included in the manifest.")
+  }
+
   anchor { 'nginx::package::begin': }
   anchor { 'nginx::package::end': }
 
@@ -47,6 +52,15 @@ class nginx::package(
         require => Anchor['nginx::package::begin'],
         before  => Anchor['nginx::package::end'],
         nx_package_ensure => $nx_package_ensure,
+      }
+    }
+    'Solaris': {
+      class { 'nginx::package::solaris':
+        package_name   => $package_name,
+        package_source => $package_source,
+        package_ensure => $package_ensure,
+        require => Anchor['nginx::package::begin'],
+        before  => Anchor['nginx::package::end'],
       }
     }
     default: {
